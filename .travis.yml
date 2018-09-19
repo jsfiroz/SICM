@@ -25,6 +25,7 @@ matrix:
                 - libpfm4-dev
                 - llvm-3.9-dev
                 - numactl
+                - python-pip
                 - wget
           env:
              - C_COMPILER="gcc-7"
@@ -45,6 +46,7 @@ matrix:
                 - libpfm4-dev
                 - llvm-3.9-dev
                 - numactl
+                - python-pip
                 - wget
           env:
              - C_COMPILER="gcc-8"
@@ -68,15 +70,17 @@ install:
     - export PKG_CONFIG_PATH=${JEPATH}:${PKG_CONFIG_PATH}
     - export PATH=${MPI_PATH}/bin:$PATH
 
+    - pip install --user --install-option="--prefix=${SWHOME}" cpp-coveralls
+
 script:
     # do not cache SICM files in SWHOME
-    - export SICM_ROOT=$(pwd)
+    - export SICM_ROOT="$(pwd)/SICM"
 
     # build SICM
     - ./autogen.sh
     - mkdir -p build
     - cd build
-    - CFLAGS="-O0 -g3 --coverage ${CFLAGS}" ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT}
+    - CFLAGS="-O0 -g3 --coverage ${CFLAGS}" ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT} --enable-gcov
     - make -j $(nproc --all)
     - make install
     - cp src/low/sicm_f90.mod ${SICM_ROOT}/lib
@@ -100,6 +104,5 @@ script:
     # - mpirun -np 4 --oversubscribe ./gsnap ../qasnap/mms_src/3d_fixup_st.inp /dev/null
 
 after_success:
-    - cd ${TRAVIS_BUILD_DIR}/build/src/low
-    - for f in $(find -name "*lib*.gcno"); do gcov $f; done
-    - bash <(curl -s https://codecov.io/bash)
+    - cd ${TRAVIS_BUILD_DIR}
+    - ${SWHOME}/bin/coveralls --gcov-options '\-lp'
