@@ -60,7 +60,7 @@ install:
     - export SWHOME="${TRAVIS_BUILD_DIR}/.local"
 
     # Install the dependencies into SWHOME
-    - travis_wait 50 ./install_deps.sh --jemalloc --mpi --build_dir $(pwd) --install_dir ${SWHOME}
+    - travis_wait 50 ./install_deps.sh --jemalloc --build_dir $(pwd) --install_dir ${SWHOME}
 
     - export JEPATH="${SWHOME}/jemalloc"
     - export MPI_PATH="${SWHOME}/openmpi-3.1.1"
@@ -91,9 +91,10 @@ script:
     - find test -type f -executable -exec echo "Running {}" \; -exec {} \;
 
     # run SNAP with SICM
-    - cd examples/SNAP/src
-    - CC=${MPI_PATH}/bin/mpicc CXX=${MPI_PATH}/bin/mpic++ FC=${MPI_PATH}/bin/mpif90 MPI_INCLUDE=${MPI_PATH}/include OMPI_FC=${FORTRAN_COMPILER} SICM_ROOT=${SICM_ROOT} make -j $(nproc --all)
-    - for input in ../qasnap/mms_src/1d_fixup_*.inp;  do mpirun -np 1 --oversubscribe ./gsnap $input /dev/null; done
+    #- travis_wait 50 ./install_deps.sh --mpi --build_dir $(pwd) --install_dir ${SWHOME}
+    #- cd examples/SNAP/src
+    #- CC=${MPI_PATH}/bin/mpicc CXX=${MPI_PATH}/bin/mpic++ FC=${MPI_PATH}/bin/mpif90 MPI_INCLUDE=${MPI_PATH}/include OMPI_FC=${FORTRAN_COMPILER} SICM_ROOT=${SICM_ROOT} make -j $(nproc --all)
+    #- for input in ../qasnap/mms_src/1d_fixup_*.inp;  do mpirun -np 1 --oversubscribe ./gsnap $input /dev/null; done
     # - for input in ../qasnap/mms_src/2d_fixup_*.inp;  do mpirun -np 4 --oversubscribe ./gsnap $input /dev/null; done
     # - for input in ../qasnap/mms_src/3d_fixup_t*.inp; do mpirun -np 8 --oversubscribe ./gsnap $input /dev/null; done
     # - mpirun -np 4 --oversubscribe ./gsnap ../qasnap/mms_src/3d_fixup_st.inp /dev/null
