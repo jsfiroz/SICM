@@ -69,16 +69,16 @@ install:
     - export PATH=${MPI_PATH}/bin:$PATH
 
 script:
-    - export SICM_ROOT=${SWHOME}/SICM
+    # do not cache SICM files in SWHOME
+    - export SICM_ROOT=.
 
     # build SICM
     - ./autogen.sh
     - mkdir -p build
     - cd build
-    - ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT}
+    - CFLAGS="-O0 -g3 --coverage ${CFLAGS}" ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT}
     - make -j $(nproc --all)
     - make install
-    - ls -R
     - cp src/low/sicm_f90.mod ${SICM_ROOT}/lib
     - export LD_LIBRARY_PATH=${SICM_ROOT}/lib:${LD_LIBRARY_PATH}
 
@@ -97,3 +97,8 @@ script:
     # - for input in ../qasnap/mms_src/2d_fixup_*.inp;  do mpirun -np 4 --oversubscribe ./gsnap $input /dev/null; done
     # - for input in ../qasnap/mms_src/3d_fixup_t*.inp; do mpirun -np 8 --oversubscribe ./gsnap $input /dev/null; done
     # - mpirun -np 4 --oversubscribe ./gsnap ../qasnap/mms_src/3d_fixup_st.inp /dev/null
+
+after_success:
+    - cd ${TRAVIS_BUILD_DIR}/build/src/low
+    - for f in $(find -name "*lib*.gcno"); do gcov $f; done
+    - bash <(curl -s https://codecov.io/bash)
