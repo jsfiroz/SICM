@@ -70,7 +70,7 @@ install:
 
 script:
     # do not cache SICM files in SWHOME
-    - export SICM_ROOT=.
+    - export SICM_ROOT=$(pwd)
 
     # build SICM
     - ./autogen.sh
