@@ -80,7 +80,7 @@ script:
     - ./autogen.sh
     - mkdir -p build
     - cd build
-    - CFLAGS="-O0 -g3 --coverage ${CFLAGS}" ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT} --enable-gcov
+    - CFLAGS="-O0 -g3 --coverage ${CFLAGS}" ../configure --with-jemalloc=${JEPATH} --prefix=${SICM_ROOT}
     - make -j $(nproc --all)
     - make install
     - cp src/low/sicm_f90.mod ${SICM_ROOT}/lib
