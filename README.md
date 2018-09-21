@@ -2,6 +2,7 @@
 Simplified Interface to Complex Memory
 
 [![Build Status](https://travis-ci.org/lanl/SICM.svg?branch=master)](https://travis-ci.org/lanl/SICM)
+[![Coverage Status](https://coveralls.io/repos/github/lanl/SICM/badge.svg)](https://coveralls.io/github/lanl/SICM)
 
 ## Introduction
 This project is split into two interfaces: `low` and `high`.
